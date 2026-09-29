@@ -1,0 +1,23 @@
+{
+  "name": "ig-seguidores",
+  "version": "1.1.0",
+  "description": "Revisa quien no te sigue de vuelta en Instagram y quien te dejo de seguir",
+  "author": "Lucas",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.local.igseguidores",
+    "productName": "IG Seguidores",
+    "files": ["main.js", "preload.js", "index.html", "renderer.js", "icon.png"],
+    "win": { "target": "nsis", "icon": "icon.ico" },
+    "mac": { "target": "dmg" },
+    "linux": { "target": "AppImage" }
+  }
+}

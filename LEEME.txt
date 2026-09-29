@@ -1,0 +1,5 @@
+IG Seguidores
+1) Instalar Node.js (nodejs.org)
+2) En esta carpeta:  npm install
+3) Abrir la app:      npm start
+4) Crear instalador:  npm run dist   (queda en la carpeta dist/)

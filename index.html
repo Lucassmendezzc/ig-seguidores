@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+<title>IG Seguidores</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f4f3fb;
+    --surface: #ffffff;
+    --surface2: #efedfa;
+    --bd: #e2dff4;
+    --fg: #1b1838;
+    --mut: #6b688f;
+    --ac: #6b4bff;
+    --pink: #e11d74;
+    --amber-text: #b45309;
+    --shadow: 0 1px 2px rgba(27,24,56,.06), 0 10px 28px rgba(27,24,56,.07);
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0e0d1f; --surface: #171532; --surface2: #1f1c40; --bd: #2a2755;
+    --fg: #f1efff; --mut: #9d99c9; --ac: #b39dff; --pink: #ff6fb0;
+    --amber-text: #fbbf24; --shadow: none;
+  }
+  :root[data-theme="light"] { color-scheme: light; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e0d1f; --surface: #171532; --surface2: #1f1c40; --bd: #2a2755;
+      --fg: #f1efff; --mut: #9d99c9; --ac: #b39dff; --pink: #ff6fb0;
+      --amber-text: #fbbf24; --shadow: none;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font: 14px/1.5 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    padding: 22px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { max-width: 980px; margin: 0 auto; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--ac);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    padding: 28px 32px 22px;
+    color: #fff;
+    background:
+      radial-gradient(90% 130% at 100% 0%, #ff4f9a 0%, rgba(255,79,154,0) 58%),
+      radial-gradient(80% 120% at 0% 100%, #4a35f0 0%, rgba(74,53,240,0) 62%),
+      #24157a;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    right: -70px; top: -70px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    border: 34px solid rgba(255,255,255,.10);
+    box-shadow: -120px 80px 0 -6px rgba(255,255,255,.07);
+    pointer-events: none;
+  }
+  .hero > * { position: relative; z-index: 1; }
+
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 15px; }
+  .brand svg { display: block; }
+  .brand .btn { margin-left: auto; padding: 6px 12px; font-size: 13px; }
+
+  h1 {
+    margin: 18px 0 6px;
+    font-size: 36px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    max-width: 16em;
+  }
+  .sub { margin: 0 0 22px; max-width: 46ch; color: rgba(255,255,255,.82); font-size: 15px; }
+
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: transform .12s ease, background .12s ease, opacity .12s ease;
+  }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn-primary { background: #fff; color: #2a1a8a; box-shadow: 0 6px 18px rgba(20,8,80,.35); }
+  .btn-primary:hover:not(:disabled) { background: #f3f0ff; }
+  .btn-ghost { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.30); color: #fff; }
+  .btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,.22); }
+  .hero .btn:focus-visible { outline-color: #fff; }
+
+  .progress {
+    margin-top: 18px;
+    height: 6px;
+    border-radius: 6px;
+    background: rgba(255,255,255,.2);
+    overflow: hidden;
+  }
+  .progress[hidden] { display: none; }
+  .progress i {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 6px;
+    background: #fff;
+    transition: width .25s ease;
+  }
+  .progress i.indet { width: 35%; animation: slide 1.2s ease-in-out infinite; }
+  @keyframes slide { 0% { margin-left: -35%; } 100% { margin-left: 100%; } }
+
+  #status {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,.18);
+    color: rgba(255,255,255,.9);
+    min-height: 38px;
+    display: flex;
+    gap: 9px;
+    align-items: baseline;
+  }
+  .progress:not([hidden]) + #status { margin-top: 12px; }
+  #status::before {
+    content: "";
+    flex: none;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #7dffc0;
+    transform: translateY(-1px);
+  }
+
+  /* ---------- Stats ---------- */
+  #stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--bd);
+    border-radius: 18px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }
+  .stat b {
+    display: block;
+    font-size: 30px;
+    line-height: 1.1;
+    font-weight: 780;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat span { color: var(--mut); font-size: 13px; }
+  .stat:nth-child(3) b { color: var(--pink); }
+  .stat:nth-child(4) b { color: var(--amber-text); }
+  .stat:nth-child(5) b { color: var(--ac); }
+
+  .welcome {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border: 1px dashed var(--bd);
+    border-radius: 18px;
+    padding: 20px 24px;
+  }
+  .welcome h2 { margin: 0 0 10px; font-size: 16px; font-weight: 700; }
+  .welcome ol { margin: 0; padding-left: 20px; color: var(--mut); }
+  .welcome li { margin: 4px 0; }
+  .welcome li b { color: var(--fg); font-weight: 600; }
+
+  /* ---------- Toolbar / tabs ---------- */
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 22px 0 12px;
+  }
+  .toolbar:has(#tabs:empty) { display: none; }
+  .tabs {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--surface2);
+    border-radius: 14px;
+    flex-wrap: wrap;
+  }
+  .tabs button {
+    border: 0;
+    background: transparent;
+    color: var(--mut);
+    padding: 7px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: background .12s ease, color .12s ease;
+  }
+  .tabs button:hover { color: var(--fg); }
+  .tabs button.active {
+    background: var(--surface);
+    color: var(--ac);
+    box-shadow: 0 1px 3px rgba(20,10,80,.18);
+  }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-soft {
+    background: var(--surface);
+    border: 1px solid var(--bd);
+    color: var(--fg);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .btn-soft:hover:not(:disabled) { border-color: var(--ac); color: var(--ac); }
+  .btn-soft:disabled { opacity: .5; cursor: default; }
+
+  /* ---------- Filtros ---------- */
+  .filterbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .filterbar[hidden] { display: none; }
+  #filter {
+    flex: 1 1 240px;
+    min-width: 0;
+    padding: 10px 14px;
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--fg);
+    font: inherit;
+  }
+  #filter::placeholder { color: var(--mut); }
+  .filterbar select {
+    padding: 10px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--fg);
+    font: inherit;
+  }
+  .filterbar label { display: flex; align-items: center; gap: 6px; color: var(--mut); user-select: none; cursor: pointer; }
+  .filterbar input[type="checkbox"] { accent-color: var(--ac); width: 16px; height: 16px; }
+
+  /* ---------- Listas ---------- */
+  .ulist {
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    max-height: 430px;
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--bd);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+  }
+  .ulist[hidden] { display: none; }
+  .ulist > li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 12px;
+  }
+  .ulist > li:hover { background: var(--surface2); }
+  .ulist > li.empty {
+    display: block;
+    text-align: center;
+    color: var(--mut);
+    padding: 34px 20px;
+  }
+  .ulist > li.empty:hover { background: transparent; }
+  .ulist::-webkit-scrollbar { width: 10px; }
+  .ulist::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 10px; border: 2px solid var(--surface); }
+
+  .who { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .av {
+    flex: none;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff4f9a, #6b4bff);
+  }
+  .info { display: flex; flex-direction: column; min-width: 0; }
+  .info b { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .info small { color: var(--mut); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .rowactions { display: flex; gap: 6px; flex: none; }
+  .link {
+    border: 1px solid var(--bd);
+    background: transparent;
+    color: var(--ac);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .link:hover { background: var(--ac); border-color: var(--ac); color: var(--bg); }
+
+  #chart {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--bd);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+  }
+  #chart[hidden] { display: none; }
+
+  /* ---------- Comparar ---------- */
+  #compare[hidden] { display: none; }
+  .cmpbar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; }
+  .cmpbar label { display: flex; flex-direction: column; gap: 4px; color: var(--mut); font-size: 13px; }
+  .cmpbar select {
+    padding: 9px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--fg);
+    font: inherit;
+    min-width: 230px;
+  }
+  .cmpgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .cmpgrid h3 { margin: 0 0 8px; font-size: 15px; }
+  .cmpgrid .ulist { max-height: 340px; }
+
+  /* ---------- Pie ---------- */
+  .foot {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--bd);
+    display: flex;
+    gap: 6px 18px;
+    flex-wrap: wrap;
+    align-items: center;
+    color: var(--mut);
+    font-size: 13px;
+  }
+  .foot button { border: 0; background: none; padding: 0; color: var(--mut); text-decoration: underline; text-underline-offset: 3px; }
+  .foot button:hover { color: var(--ac); }
+  .foot .grow { margin-left: auto; }
+
+  @media (max-width: 720px) {
+    body { padding: 12px; }
+    .hero { padding: 22px 20px 18px; }
+    h1 { font-size: 28px; }
+    .cmpgrid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="hero">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+        <circle cx="11" cy="15" r="8" stroke="#fff" stroke-width="2.6"/>
+        <circle cx="19" cy="15" r="8" stroke="#fff" stroke-width="2.6" opacity=".55"/>
+      </svg>
+      IG Seguidores
+      <button id="btnTheme" class="btn btn-ghost" title="Cambiar entre tema claro y oscuro">Tema</button>
+    </div>
+    <h1>¿Quién no te sigue de vuelta?</h1>
+    <p class="sub">Comparamos tus seguidos y seguidores, y te avisamos quién dejó de seguirte desde la última vez.</p>
+
+    <div class="row">
+      <button id="btnRun" class="btn btn-primary">Analizar mi cuenta</button>
+      <button id="btnLogin" class="btn btn-ghost">Iniciar sesión en Instagram</button>
+      <button id="btnImport" class="btn btn-ghost">Cargar export oficial</button>
+      <button id="btnDemo" class="btn btn-ghost">Modo demo</button>
+    </div>
+
+    <div id="progress" class="progress" hidden><i id="bar" class="indet"></i></div>
+    <div id="status">Iniciá sesión en Instagram y después tocá “Analizar mi cuenta”.</div>
+  </header>
+
+  <section id="stats">
+    <div class="welcome">
+      <h2>Cómo empezar</h2>
+      <ol>
+        <li><b>Iniciá sesión</b> en la ventana de Instagram que se abre.</li>
+        <li>Tocá <b>Analizar mi cuenta</b> y esperá a que termine de cargar.</li>
+        <li>Revisá las listas, filtralas y exportalas a Excel o PDF.</li>
+      </ol>
+      <p style="margin:12px 0 0;color:var(--mut)">¿Solo querés ver cómo funciona? Probá el <b style="color:var(--fg)">modo demo</b>: usa datos ficticios.</p>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div id="tabs" class="tabs"></div>
+    <div class="actions">
+      <button id="btnCopy" class="btn-soft" disabled>Copiar lista</button>
+      <button id="btnCsv" class="btn-soft" disabled>Excel</button>
+      <button id="btnPdf" class="btn-soft" disabled>Reporte PDF</button>
+      <button id="btnSave" class="btn-soft" disabled>JSON</button>
+    </div>
+  </div>
+
+  <div id="filterbar" class="filterbar" hidden>
+    <input id="filter" placeholder="Buscar por usuario, nombre o motivo (Ctrl+F)">
+    <select id="sort" aria-label="Ordenar">
+      <option value="default">Orden original</option>
+      <option value="az">A a Z</option>
+      <option value="za">Z a A</option>
+    </select>
+    <label><input type="checkbox" id="hideVerified"> Ocultar verificadas</label>
+    <label><input type="checkbox" id="hidePrivate"> Ocultar privadas</label>
+  </div>
+
+  <ul id="list" class="ulist" hidden></ul>
+  <canvas id="chart" width="920" height="320" hidden></canvas>
+
+  <section id="compare" hidden>
+    <div class="cmpbar">
+      <label>Desde<select id="cmpA"></select></label>
+      <label>Hasta<select id="cmpB"></select></label>
+      <button id="btnCmp" class="btn-soft">Comparar</button>
+    </div>
+    <div class="cmpgrid">
+      <div><h3 id="cmpTitleA"></h3><ul id="cmpListA" class="ulist"></ul></div>
+      <div><h3 id="cmpTitleB"></h3><ul id="cmpListB" class="ulist"></ul></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Tus datos se guardan solo en esta PC.</span>
+    <button id="btnLogout">Cerrar sesión de Instagram</button>
+    <button id="btnWipe">Borrar historial</button>
+    <button id="btnFolder">Abrir carpeta de datos</button>
+    <span id="ver" class="grow"></span>
+  </footer>
+
+</div>
+<script src="renderer.js"></script>
+</body>
+</html>
